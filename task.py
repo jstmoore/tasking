@@ -29,7 +29,7 @@ class TaskList:
 
 class Task:
     def __init__(
-        self, name="", urgent=False, important=False, description=None, children=None
+        self, name="", urgent=False, important=False, description="", children=None
     ) -> None:
         self.name = name
         self.urgent = urgent
