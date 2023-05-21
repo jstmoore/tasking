@@ -5,7 +5,8 @@ tasking:
     - add
         - optionals: [name, --desc, --urgent, --important]
     - modify taskid
-        TODO: Decide on API for modifying task urgency and importance
+        TODO: subtask, design API
+        TODO: complete/remove task
     - print taskid
         - optionals: [-S]
     - printall
@@ -61,15 +62,37 @@ def add_task(args: argparse.Namespace):
     write_tasks(tasks)
 
 
-def modify_task(args: argparse.Namespace): # Not implemented yet pylint: disable=unused-argument
+def modify_task(args: argparse.Namespace):
     """Router function to modify a task in the list of tasks in tasks.pkl.
 
     Args:
         args (argparse.Namespace): Returned by parser.arg_parse().
     """
+    taskid = args.taskid
+    tasks = read_tasks()
+    task = tasks[taskid]
+
+    if args.name:
+        task.name = args.name
+    if args.desc:
+        task.desc = args.desc
+    if args.urgent:
+        task.urgent = True
+    if args.noturgent:
+        task.urgent = False
+    if args.important:
+        task.important = True
+    if args.notimportant:
+        task.important = False
+
+    write_tasks(tasks)
+
+    # print(args)
 
 
-def print_task(args: argparse.Namespace): # Not implemented yet pylint: disable=unused-argument
+def print_task(
+    args: argparse.Namespace,
+):  # Not implemented yet pylint: disable=unused-argument
     """Router function to print a task in the list of tasks in tasks.pkl.
 
     Args:
@@ -77,7 +100,9 @@ def print_task(args: argparse.Namespace): # Not implemented yet pylint: disable=
     """
 
 
-def print_all_tasks(args: argparse.Namespace): # Not implemented yet pylint: disable=unused-argument
+def print_all_tasks(
+    args: argparse.Namespace,
+):  # Not implemented yet pylint: disable=unused-argument
     """Router function to print the tasks in the list of tasks in tasks.pkl.
 
     Args:
@@ -125,21 +150,33 @@ def make_parser() -> argparse.ArgumentParser:
     add_parser.set_defaults(func=add_task)
 
     modify_parser = subparsers.add_parser("modify", help="Modify a task", aliases=["m"])
-    modify_parser.add_argument("taskid", help="ID of the task")
+    modify_parser.add_argument("taskid", help="ID of the task", type=int)
     modify_parser.add_argument("-N", "-n", "--name", help="Name of task", default=None)
     modify_parser.add_argument(
         "-D", "-d", "--desc", help="Description of task", default=None
     )
-    modify_parser.add_argument(
-        "-U", "-u", "--urgent", help="Urgency of task", action="store_true"
+    urgency_group = modify_parser.add_mutually_exclusive_group()
+    importance_group = modify_parser.add_mutually_exclusive_group()
+    urgency_group.add_argument(
+        "-U", "-u", "--urgent", help="Make task urgent", action="store_true"
     )
-    modify_parser.add_argument(
-        "-I", "-i", "--important", help="Importance of task", action="store_true"
+    importance_group.add_argument(
+        "-I", "-i", "--important", help="Make task important", action="store_true"
+    )
+    urgency_group.add_argument(
+        "-NU", "-nu", "--noturgent", help="Make task not urgent", action="store_true"
+    )
+    importance_group.add_argument(
+        "-NI",
+        "-ni",
+        "--notimportant",
+        help="Make task not important",
+        action="store_true",
     )
     modify_parser.set_defaults(func=modify_task)
 
     print_parser = subparsers.add_parser("print", help="Print a task", aliases=["p"])
-    print_parser.add_argument("taskid", help="ID of the task")
+    print_parser.add_argument("taskid", help="ID of the task", type=int)
     print_parser.add_argument(
         "-S", "-s", help="Prints tabular overview of subtasks", action="store_true"
     )

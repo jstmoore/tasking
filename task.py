@@ -24,8 +24,8 @@ class Task:
 
     Attributes:
         Name: String of the task name.
-        Urgency: Boolean of if the task is urgent or not.
-        Importance: Boolean of if the task is important or not.
+        Urgent: Boolean of if the task is urgent or not.
+        Important: Boolean of if the task is important or not.
         Description: String of the task description.
         Subtasks: List of tasks included.
     """
