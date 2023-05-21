@@ -17,7 +17,8 @@ for its namespace.
 
 import argparse
 import pickle
-from task import Task, TaskList
+from task import Task
+from tasklist import TaskList
 
 
 def read_tasks() -> list[Task]:
