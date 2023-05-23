@@ -56,7 +56,15 @@ def add_task(args: argparse.Namespace):
 
     tasks = read_tasks()
 
-    task = Task(name, desc, urgency, importance)
+    task = Task()
+    if name is not None:
+        task.name = name
+    if desc is not None:
+        task.desc = desc
+
+    task.urgent = urgency
+    task.important = importance
+
     tasks.append(task)
 
     write_tasks(tasks)
@@ -75,7 +83,7 @@ def modify_task(args: argparse.Namespace):
     if args.name:
         task.name = args.name
     if args.desc:
-        task.desc = args.desc
+        task.description = args.desc
     if args.urgent:
         task.urgent = True
     if args.noturgent:
@@ -84,25 +92,32 @@ def modify_task(args: argparse.Namespace):
         task.important = True
     if args.notimportant:
         task.important = False
+    if args.addsubtask is not None:
+        task.children.append(tasks[args.addsubtask])
+    if args.removesubtask is not None:
+        del task.children[args.removesubtask]
 
     write_tasks(tasks)
 
-    # print(args)
+    print(args)
 
 
 def print_task(
     args: argparse.Namespace,
-):  # Not implemented yet pylint: disable=unused-argument
+):
     """Router function to print a task in the list of tasks in tasks.pkl.
 
     Args:
         args (argparse.Namespace): Returned by parser.arg_parse().
     """
 
+    taskid = args.taskid
+    tasks = read_tasks()
+    print(tasks[taskid])
 
 def print_all_tasks(
-    args: argparse.Namespace,
-):  # Not implemented yet pylint: disable=unused-argument
+    args: argparse.Namespace, #pylint: disable=unused-argument
+):
     """Router function to print the tasks in the list of tasks in tasks.pkl.
 
     Args:
@@ -154,6 +169,13 @@ def make_parser() -> argparse.ArgumentParser:
     modify_parser.add_argument("-N", "-n", "--name", help="Name of task", default=None)
     modify_parser.add_argument(
         "-D", "-d", "--desc", help="Description of task", default=None
+    )
+    subtask_group = modify_parser.add_mutually_exclusive_group()
+    subtask_group.add_argument(
+        "-AS", "-as", "--addsubtask", help="Id of task to add to subtask list", type=int
+    )
+    subtask_group.add_argument(
+        "-RS", "-rs", "--removesubtask", help="Id of task to remove from subtask list", type=int
     )
     urgency_group = modify_parser.add_mutually_exclusive_group()
     importance_group = modify_parser.add_mutually_exclusive_group()
