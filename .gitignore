@@ -1,3 +1,12 @@
+# virtual environment
+.env/
+
+# pytest cache
+**/__pycache__/
+
+# JetBrains
+.idea
+
 # Logs
 logs
 *.log

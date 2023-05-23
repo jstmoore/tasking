@@ -61,6 +61,7 @@ class Task:
             subtasks (list[Task], optional): Subtasks. If not passed in, the
                 task has an empty list of subtasks. Defaults to None.
         """
+
         self.name = name
         self.state = state
         self.urgent = urgent
